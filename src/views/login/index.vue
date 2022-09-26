@@ -3,17 +3,19 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">帝可得</h3>
+        <h3 class="title">
+          <img src="../../assets/common/logo.png" alt="" width="100px" height="100px">
+        </h3>
       </div>
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <i class="el-icon-mobile" />
         </span>
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
+          placeholder="请输入账户"
           name="username"
           type="text"
           tabindex="1"
@@ -30,7 +32,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="请输入密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -41,12 +43,23 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <!-- 验证码 ↓ -->
+      <el-form-item prop="username" class="random">
+        <span class="svg-container">
+          <i class="el-icon-first-aid-kit" />
+        </span>
+        <el-input
+          v-model="loginForm.verificationCode"
+          placeholder="验证码"
+          type="text"
+          tabindex="1"
+          auto-complete="on"
+        />
+        <img :src="resimg" alt="" @click="verification">
+      </el-form-item>
+      <!-- 验证码 ↑ -->
 
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
+      <el-button class="loginbut" :loading="loading" type="primary" @click.native.prevent="handleLogin">登录</el-button>
 
     </el-form>
   </div>
@@ -54,7 +67,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-
+import { loginAPI, randomAPI } from '@/api/user'
 export default {
   name: 'Login',
   data() {
@@ -73,17 +86,26 @@ export default {
       }
     }
     return {
+      loading: false,
+      passwordType: 'password',
+      redirect: undefined,
+      resimg: '',
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: '111111',
+        verificationCode: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
-      loading: false,
-      passwordType: 'password',
-      redirect: undefined
+      user: {
+        loginName: 'admin',
+        password: '111111',
+        code: '1975',
+        clientToken: '',
+        loginType: 0
+      }
     }
   },
   watch: {
@@ -93,6 +115,9 @@ export default {
       },
       immediate: true
     }
+  },
+  created() {
+    this.verification()
   },
   methods: {
     showPwd() {
@@ -105,29 +130,28 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+    async verification() {
+      const vfCode = Math.floor(Math.random())
+      const res = await randomAPI(vfCode)
+      this.resimg = res.config.url
+      console.log(res)
+    },
+    async handleLogin() {
+      try {
+        const { data } = await loginAPI(this.user)
+        console.log(data)
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 }
+
 </script>
 
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
+// Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927
 
 $bg:#283443;
 $light_gray:#fff;
@@ -177,6 +201,12 @@ $bg:#2d3a4b;
 $dark_gray:#889aa4;
 $light_gray:#eee;
 
+/* reset element-ui css */
+.login-container {
+  background-image: url('~@/assets/common/background.png'); // 设置背景图片
+  background-position: center; // 将图片位置设置为充满整个屏幕
+}
+
 .login-container {
   min-height: 100%;
   width: 100%;
@@ -189,7 +219,6 @@ $light_gray:#eee;
     max-width: 100%;
     padding: 160px 35px 0;
     margin: 0 auto;
-    overflow: hidden;
   }
 
   .tips {
@@ -216,11 +245,21 @@ $light_gray:#eee;
     position: relative;
 
     .title {
+      width: 100%;
+      height: 80px;
       font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
+      margin: 0px;
       text-align: center;
       font-weight: bold;
+      img {
+        z-index: 1;
+        position: absolute;
+        left: 0;
+        top: -80px;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+      }
     }
   }
 
@@ -233,5 +272,47 @@ $light_gray:#eee;
     cursor: pointer;
     user-select: none;
   }
+}
+
+.loginbut{
+  width:100%;
+  height:50px;
+  margin-bottom:10px;
+  border-radius: 5px;
+  background-image:linear-gradient(to right, rgb(81, 92, 169),rgb(36, 64, 186));
+}
+
+.login-container .login-form[data-v-37dfd6fc] {
+    position: relative;
+    width: 520px;
+    height: 390px;
+    max-width: 100%;
+    padding: 0px 35px;
+    margin: 200px auto;
+    // overflow: hidden; // 禁止超出隐藏 让logo 显示
+    background-image:linear-gradient(to bottom, rgba(36, 177, 199),rgba(65, 96, 228));
+    border-radius: 10px;
+}
+// input 背景色和 边框
+.login-container .el-form-item {
+    border: 1px solid #e2e2e2;
+    background-image:linear-gradient(to right, rgb(102, 114, 201),rgba(100, 126, 241));
+    border-radius: 5px;
+}
+
+.login-container .svg-container[data-v-37dfd6fc] {
+    padding: 6px 5px 6px 15px;
+    color: #fff;
+    vertical-align: middle;
+    width: 30px;
+    display: inline-block;
+}
+
+.random {
+    img {
+      position: absolute;
+      right: 1px;
+      bottom: 1px;
+    }
 }
 </style>
