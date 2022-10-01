@@ -1,18 +1,11 @@
 <template>
-  <section class="app-main">
-    <transition name="fade-transform" mode="out-in">
-      <router-view :key="key" />
-    </transition>
-  </section>
+  <div>111</div>
 </template>
 
 <script>
 export default {
   name: 'AppMain',
   computed: {
-    key() {
-      return this.$route.path
-    }
   }
 }
 </script>
@@ -20,13 +13,23 @@ export default {
 <style scoped>
 .app-main {
   /*50 = navbar  */
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - 10px);
   width: 100%;
+  padding-left: 210px;
   position: relative;
   overflow: hidden;
+  position: absolute;
+  right: 0px;
+  margin-top: 60px;
 }
 .fixed-header+.app-main {
   padding-top: 50px;
+}
+/* 内容 */
+.dkd-home {
+  width: 100%;
+  height: 100%;
+  background-color: aqua;
 }
 </style>
 

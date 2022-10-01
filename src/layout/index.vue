@@ -1,12 +1,10 @@
 <template>
   <div :class="classObj" class="app-wrapper">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
-    <sidebar class="sidebar-container" />
-    <div class="main-container">
-      <div :class="{'fixed-header':fixedHeader}">
-        <navbar />
-      </div>
-      <app-main />
+    <navbar />
+    <div class="sidemain">
+      <sidebar class="sidebar-container" />
+      <app-main>1111</app-main>
     </div>
   </div>
 </template>
@@ -57,13 +55,14 @@ export default {
   .app-wrapper {
     @include clearfix;
     position: relative;
-    height: 100%;
-    width: 100%;
+    // height: 100%;
+    // width: 100%;
     &.mobile.openSidebar{
       position: fixed;
       top: 0;
     }
   }
+
   .drawer-bg {
     background: #000;
     opacity: 0.3;
@@ -89,5 +88,9 @@ export default {
 
   .mobile .fixed-header {
     width: 100%;
+  }
+
+  .sidemain{
+    display: flex;
   }
 </style>

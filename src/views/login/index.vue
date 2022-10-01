@@ -14,7 +14,7 @@
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
+          v-model="user.loginName"
           placeholder="请输入账户"
           name="username"
           type="text"
@@ -30,7 +30,7 @@
         <el-input
           :key="passwordType"
           ref="password"
-          v-model="loginForm.password"
+          v-model="user.password"
           :type="passwordType"
           placeholder="请输入密码"
           name="password"
@@ -49,7 +49,7 @@
           <i class="el-icon-first-aid-kit" />
         </span>
         <el-input
-          v-model="loginForm.verificationCode"
+          v-model="user.code"
           placeholder="验证码"
           type="text"
           tabindex="1"
@@ -67,20 +67,20 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-import { loginAPI, randomAPI } from '@/api/user'
+import { loginAPI, randomAPI } from '@/api'
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入正确的账户'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('请输入密码'))
       } else {
         callback()
       }
@@ -92,8 +92,7 @@ export default {
       resimg: '',
       loginForm: {
         username: 'admin',
-        password: '111111',
-        verificationCode: ''
+        password: '111111'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -101,11 +100,13 @@ export default {
       },
       user: {
         loginName: 'admin',
-        password: '111111',
-        code: '1975',
+        password: 'admin',
         clientToken: '',
-        loginType: 0
-      }
+        loginType: 0,
+        code: ''
+      },
+      userToken: '',
+      userdata: []
     }
   },
   watch: {
@@ -131,15 +132,22 @@ export default {
       })
     },
     async verification() {
-      const vfCode = Math.floor(Math.random())
-      const res = await randomAPI(vfCode)
+      this.user.clientToken = Math.random()
+      const res = await randomAPI(this.user.clientToken)
       this.resimg = res.config.url
       console.log(res)
     },
     async handleLogin() {
       try {
         const { data } = await loginAPI(this.user)
-        console.log(data)
+        if (data.msg === '登录成功') {
+          this.$router.push('/')
+          this.userToken = data.token
+          this.userdata = data
+          console.log('成功登录了，进行跳转')
+          console.log(data)
+        }
+        this.$message(data.msg)
       } catch (error) {
         console.log(error)
       }

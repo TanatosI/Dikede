@@ -1,11 +1,6 @@
 <template>
   <el-breadcrumb class="app-breadcrumb" separator="/">
-    <transition-group name="breadcrumb">
-      <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.path">
-        <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" class="no-redirect">{{ item.meta.title }}</span>
-        <a v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>
-      </el-breadcrumb-item>
-    </transition-group>
+    <img src="@/assets/common/logoone.png" alt="">
   </el-breadcrumb>
 </template>
 
@@ -73,6 +68,12 @@ export default {
   .no-redirect {
     color: #97a8be;
     cursor: text;
+  }
+// logo图片大小以及位置
+  img{
+    width: 100px;
+    height: 40px;
+    margin-top: 10px;
   }
 }
 </style>

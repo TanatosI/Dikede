@@ -1,39 +1,56 @@
 <template>
   <div v-if="!item.hidden">
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
-      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
-        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
-          <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" :title="onlyOneChild.meta.title" />
-        </el-menu-item>
-      </app-link>
-    </template>
+      <el-menu-item>
+        <router-link to="./">帝可得</router-link>
+      </el-menu-item>
+      <el-menu-item>
+        <span>工单管理</span>
+      </el-menu-item>
+      <el-menu-item>
+        <span>点位管理</span>
+      </el-menu-item>
+      <el-menu-item>
+        <span>设备管理</span>
+      </el-menu-item>
+      <!-- Personnel  -->
+      <el-menu-item>
+        <span>人员管理</span>
+        <!-- 人员列表 -->
+        <p />
+        <!-- 人效统计 -->
+        <p />
+        <!-- 工作量列表 -->
+        <p />
+      </el-menu-item>
 
-    <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
-      <template slot="title">
-        <item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />
-      </template>
-      <sidebar-item
-        v-for="child in item.children"
-        :key="child.path"
-        :is-nest="true"
-        :item="child"
-        :base-path="resolvePath(child.path)"
-        class="nest-menu"
-      />
-    </el-submenu>
+      <el-menu-item>
+        <span>商品管理</span>
+      </el-menu-item>
+      <el-menu-item>
+        <span>策略管理</span>
+      </el-menu-item>
+      <el-menu-item>
+        <span>订单管理</span>
+      </el-menu-item>
+      <el-menu-item>
+        <span>对账统计</span>
+      </el-menu-item>
+    </template>
   </div>
 </template>
 
 <script>
 import path from 'path'
 import { isExternal } from '@/utils/validate'
-import Item from './Item'
-import AppLink from './Link'
+// import Item from './Item'
+// import AppLink from './Link'
 import FixiOSBug from './FixiOSBug'
+// import Item from './Item.vue'
 
 export default {
-  name: 'SidebarItem',
-  components: { Item, AppLink },
+  name: 'SidebarItem', // 侧边导航栏
+  // components: { Item, AppLinkItem },
   mixins: [FixiOSBug],
   props: {
     // route object
@@ -51,7 +68,6 @@ export default {
     }
   },
   data() {
-    // To fix https://github.com/PanJiaChen/vue-admin-template/issues/237
     // TODO: refactor with render function
     this.onlyOneChild = null
     return {}
